@@ -1,0 +1,22 @@
+{
+  "name": "infiniteweb",
+  "productName": "InfiniteWeb",
+  "version": "1.0.0",
+  "description": "InfiniteWeb — infinite canvas for branch/project structure analysis",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron .",
+    "verify": "electron tools/verify.js",
+    "shot": "electron tools/shot.js",
+    "assets": "node tools/make-assets.js",
+    "build": "electron-builder --win --x64",
+    "pack": "electron-builder --dir"
+  },
+  "author": "Al3xPay",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^32.2.0",
+    "electron-builder": "^25.1.8"
+  }
+}

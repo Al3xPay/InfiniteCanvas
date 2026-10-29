@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data:; script-src 'self'">
+  <title>InfiniteWeb</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="app">
+
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">
+        <img src="assets/logo.png" alt="InfiniteWeb">
+      </div>
+      <div class="brand-text">
+        <div class="brand-name">InfiniteWeb</div>
+        <div class="brand-sub">Web · Branch Map</div>
+      </div>
+    </div>
+
+    <div class="side-search">
+      <svg class="side-search-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/>
+      </svg>
+      <input id="project-search" type="text" placeholder="Поиск проекта..." autocomplete="off">
+    </div>
+
+    <div class="side-head">
+      <span class="side-title">Проекты</span>
+      <button id="btn-new-project" class="icon-btn" title="Новый проект">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      </button>
+    </div>
+
+    <ul class="project-list" id="project-list"></ul>
+
+    <div class="dock" id="toolbar">
+      <button id="btn-arrange" class="dock-btn" title="Открыть папку со схемами проекта">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h7a2 2 0 0 1 2 2z"/>
+          <path d="M12 11v6M9.5 14.5 12 17l2.5-2.5"/>
+        </svg>
+        <span>Расположение</span>
+      </button>
+
+      <button id="btn-relayout" class="dock-btn" title="Перестроить структуру (L)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="5" cy="12" r="2.4"/><circle cx="19" cy="6" r="2.4"/><circle cx="19" cy="18" r="2.4"/>
+          <path d="M7.4 12H13M13 12l3.8-5.2M13 12l3.8 5.2"/>
+        </svg>
+        <span>Перестроить</span>
+      </button>
+
+      <button id="btn-delete" class="dock-btn danger" disabled title="Удалить выбранную ветку (Del)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6M10 11v6M14 11v6"/>
+          <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+        </svg>
+        <span>Удалить</span>
+      </button>
+
+      <button id="btn-new" class="dock-btn primary" title="Добавить ветку (N)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        <span>Новая ветка</span>
+      </button>
+
+      <button id="btn-import" class="dock-btn" title="Импортировать структуру папки (I)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h7a2 2 0 0 1 2 2z"/>
+          <path d="M12 11v6M9.5 14.5 12 17l2.5-2.5"/>
+        </svg>
+        <span>Импортировать</span>
+      </button>
+    </div>
+
+    <div class="side-foot">
+      <div class="side-foot-row"><span class="k">drag</span> узел · <span class="k">F</span> вписать</div>
+    </div>
+  </aside>
+
+  <!-- ============================== STAGE ============================= -->
+  <main class="stage">
+
+    <header class="topbar">
+      <div class="top-left">
+        <span class="status-pill"><span class="dot"></span><span id="live-count">нет данных</span></span>
+        <div class="proj-title" id="proj-title" title="Клик — переименовать проект">—</div>
+        <div class="hist-btns">
+          <button class="icon-btn" id="btn-undo" title="Отменить (Ctrl+Z)" disabled>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 14 4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/>
+            </svg>
+          </button>
+          <button class="icon-btn" id="btn-redo" title="Повторить (Ctrl+Shift+Z)" disabled>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m15 14 5-5-5-5"/><path d="M20 9H10a6 6 0 0 0 0 12h3"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+        <div class="win-controls">
+          <button id="win-min" class="win-btn" title="Свернуть">
+            <svg viewBox="0 0 12 12"><line x1="2" y1="6" x2="10" y2="6"/></svg>
+          </button>
+          <button id="win-max" class="win-btn" title="Развернуть">
+            <svg viewBox="0 0 12 12"><rect x="2.5" y="2.5" width="7" height="7" rx="1"/></svg>
+          </button>
+          <button id="win-close" class="win-btn close" title="Закрыть">
+            <svg viewBox="0 0 12 12"><line x1="2.5" y1="2.5" x2="9.5" y2="9.5"/><line x1="9.5" y1="2.5" x2="2.5" y2="9.5"/></svg>
+          </button>
+        </div>
+    </header>
+
+    <div class="canvas" id="canvas">
+      <div class="bg-grid"></div>
+      <div class="orb o1"></div>
+      <div class="orb o2"></div>
+      <div class="orb o3"></div>
+
+      <div class="world" id="world">
+        <svg class="edges" id="edges" xmlns="http://www.w3.org/2000/svg"></svg>
+        <div class="nodes" id="nodes"></div>
+      </div>
+
+      <div class="empty" id="empty-state">
+        <div class="empty-card">
+          <div class="empty-mark">
+            <img src="assets/logo.png" alt="InfiniteWeb">
+          </div>
+          <h3>Паутина пуста</h3>
+          <p>Проектов пока нет. Создайте проект слева или импортируйте структуру папки — ветки появятся на холсте с анимацией.</p>
+          <div class="empty-actions">
+            <button class="btn btn-primary" id="empty-new">Создать проект</button>
+            <button class="btn btn-ghost" id="empty-import">Импортировать папку</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="zoombar">
+        <button id="zoom-out" title="Уменьшить"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+        <span id="zoom-label">100%</span>
+        <button id="zoom-in" title="Увеличить"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+        <button id="zoom-fit" title="Вписать всё (F)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
+      </div>
+    </div>
+
+    <!-- =========================== INSPECTOR =========================== -->
+    <aside class="inspector" id="inspector">
+      <div class="insp-head">
+        <span class="insp-title" id="insp-title">Обзор проекта</span>
+        <span class="insp-badge" id="insp-badge">PROJECT</span>
+      </div>
+      <div class="insp-body" id="insp-body"></div>
+    </aside>
+
+  </main>
+</div>
+
+<!-- ============================== MODALS ============================== -->
+<div class="modal-overlay" id="modal-overlay" hidden>
+  <div class="modal" id="modal">
+    <div class="modal-head">
+      <span id="modal-title">Заголовок</span>
+      <button class="modal-x" id="modal-close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-foot" id="modal-foot"></div>
+  </div>
+</div>
+
+<div class="toast-wrap" id="toast-wrap"></div>
+
+<!-- ========================= CONTEXT MENU ========================= -->
+<div class="ctx-menu" id="ctx-menu" hidden></div>
+
+<script src="renderer.js"></script>
+</body>
+</html>

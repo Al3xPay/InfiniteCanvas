@@ -1,0 +1,38 @@
+appId: dev.stars.infiniteweb
+productName: InfiniteWeb
+copyright: Stars Studio
+
+directories:
+  output: release
+  buildResources: build
+
+files:
+  - main.js
+  - preload.js
+  - index.html
+  - styles.css
+  - renderer.js
+  - assets/**/*
+
+asar: true
+
+win:
+  target:
+    - target: nsis
+      arch:
+        - x64
+    - target: portable
+      arch:
+        - x64
+  icon: build/icon.png
+  executableName: InfiniteWeb
+  legalTrademarks: Stars Infinite Web
+
+nsis:
+  artifactName: InfiniteWeb Setup ${version}.${ext}
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+
+portable:
+  artifactName: InfiniteWeb ${version}.exe
